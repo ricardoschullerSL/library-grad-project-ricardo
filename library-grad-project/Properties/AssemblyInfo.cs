@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Scott Logic Ltd.")]
 [assembly: AssemblyProduct("library_grad_project")]
-[assembly: AssemblyCopyright("Copyright © Scott Logic Ltd. 2016")]
+[assembly: AssemblyCopyright("Copyright © Scott Logic Ltd. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

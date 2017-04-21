@@ -6,15 +6,15 @@ using Xunit;
 
 namespace LibraryGradProjectTests.Controllers
 {
-    public class BooksControllerTests
+    public class BookReservationsControllerTests
     {
         [Fact]
         public void Get_Calls_Repo_GetAll()
         {
             // Arrange
-            var mockRepo = new Mock<IRepository<Book>>();
+            var mockRepo = new Mock<IRepository<BookReservation>>();
             mockRepo.Setup(mock => mock.GetAll());
-            BooksController controller = new BooksController(mockRepo.Object);
+            BookReservationsController controller = new BookReservationsController(mockRepo.Object);
 
             // Act
             controller.Get();
@@ -27,43 +27,43 @@ namespace LibraryGradProjectTests.Controllers
         public void Get_With_Id_Calls_Repo_Get()
         {
             // Arrange
-            var mockRepo = new Mock<IRepository<Book>>();
+            var mockRepo = new Mock<IRepository<BookReservation>>();
             mockRepo.Setup(mock => mock.Get(It.IsAny<int>()));
-            BooksController controller = new BooksController(mockRepo.Object);
+            BookReservationsController controller = new BookReservationsController(mockRepo.Object);
 
             // Act
             controller.Get(1);
 
             // Assert
-            mockRepo.Verify(mock => mock.Get(It.Is<int>(x => x==1)), Times.Once);
+            mockRepo.Verify(mock => mock.Get(It.Is<int>(x => x == 1)), Times.Once);
         }
 
         [Fact]
         public void Post_With_Book_Calls_Repo_Add()
         {
             // Arrange
-            var mockRepo = new Mock<IRepository<Book>>();
-            mockRepo.Setup(mock => mock.Add(It.IsAny<Book>()));
-            BooksController controller = new BooksController(mockRepo.Object);
+            var mockRepo = new Mock<IRepository<BookReservation>>();
+            mockRepo.Setup(mock => mock.Add(It.IsAny<BookReservation>()));
+            BookReservationsController controller = new BookReservationsController(mockRepo.Object);
 
-            Book newBook = new Book() { Title = "Test" };
+            BookReservation newReservation = new BookReservation() { bookId = 0 };
 
             // Act
-            controller.Post(newBook);
+            controller.Post(newReservation);
 
             // Assert
-            mockRepo.Verify(mock => mock.Add(It.Is<Book>(b => b == newBook)), Times.Once);
+            mockRepo.Verify(mock => mock.Add(It.Is<BookReservation>(r => r == newReservation)), Times.Once);
         }
-
         [Fact]
         public void Delete_With_Id_Calls_Repo_Remove()
         {
             // Arrange
-            var mockRepo = new Mock<IRepository<Book>>();
+            var mockRepo = new Mock<IRepository<BookReservation>>();
             mockRepo.Setup(mock => mock.Remove(It.IsAny<int>()));
-            BooksController controller = new BooksController(mockRepo.Object);
+            BookReservationsController controller = new BookReservationsController(mockRepo.Object);
 
             // Act
+
             controller.Delete(1);
 
             // Assert

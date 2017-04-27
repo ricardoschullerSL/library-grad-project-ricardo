@@ -8,6 +8,7 @@ namespace LibraryGradProjectTests.Repos
 {
     public class BookRepositoryTests
     {
+
         [Fact]
         public void New_Book_Repository_Is_Empty()
         {

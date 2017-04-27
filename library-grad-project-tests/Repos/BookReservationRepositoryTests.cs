@@ -27,7 +27,7 @@ namespace LibraryGradProjectTests.Repos
         {
             // Arrange
             BookReservationRepository repo = new BookReservationRepository();
-            BookReservation newReservation = new BookReservation() { bookId = 0 };
+            BookReservation newReservation = new BookReservation() { BookId = 0 };
 
             // Act
             repo.Add(newReservation);

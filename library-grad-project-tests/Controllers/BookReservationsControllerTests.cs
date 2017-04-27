@@ -46,7 +46,7 @@ namespace LibraryGradProjectTests.Controllers
             mockRepo.Setup(mock => mock.Add(It.IsAny<BookReservation>()));
             BookReservationsController controller = new BookReservationsController(mockRepo.Object);
 
-            BookReservation newReservation = new BookReservation() { bookId = 0 };
+            BookReservation newReservation = new BookReservation() { BookId = 0 };
 
             // Act
             controller.Post(newReservation);

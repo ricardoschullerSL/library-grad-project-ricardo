@@ -8,37 +8,69 @@ namespace LibraryGradProject.Repos
 {
     public class BookReservationRepository : IRepository<BookReservation>
     {
-        private List<BookReservation> _bookReservationCollection = new List<BookReservation>();
+
+        private DbContextFactory _dbContextFactory;
+
+        public BookReservationRepository(DbContextFactory dbContextFactory)
+        {
+            _dbContextFactory = dbContextFactory;
+        }
+        
+        
 
         public void Add(BookReservation entity)
-        {
-            List<BookReservation> conflictingReservations = _bookReservationCollection.Where(bookRes => ((bookRes.bookId == entity.bookId) && 
-                                                        !((bookRes.endDate < entity.startDate) || (bookRes.startDate > entity.endDate)))).ToList();
-            if (conflictingReservations.Count == 0)
             {
-                entity.Id = _bookReservationCollection.Count;
-                _bookReservationCollection.Add(entity);
-            }
-            else
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
             {
-                throw new Exception("Conflicting Reservation") ;
+                Book _book = db.Books.Find(entity.BookId);
+                ICollection<BookReservation> currentReservations = _book.BookReservations;
+             
+                List<BookReservation> conflictingReservations = currentReservations.Where(bookRes => !((bookRes.EndDate < entity.StartDate) || (bookRes.StartDate > entity.EndDate))).ToList();
+                if (conflictingReservations.Count == 0)
+                {
+                    if (entity.StartDate <= entity.EndDate)
+                    {
+                        db.BookReservations.Add(entity);
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new Exception("Book reservation End date before Start date");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Conflicting Reservation");
+                }
             }
+            
         }
 
         public IEnumerable<BookReservation> GetAll()
         {
-            return _bookReservationCollection;
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                return db.BookReservations.ToList();
+            }
         }
 
         public BookReservation Get(int id)
         {
-            return _bookReservationCollection.Where(bookRes => bookRes.Id == id).SingleOrDefault();
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                BookReservation bres = db.BookReservations.Find(id);
+                return bres;
+            }
         }
 
         public void Remove(int id)
         {
-            BookReservation reservationToRemove = Get(id);
-            _bookReservationCollection.Remove(reservationToRemove);
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                BookReservation bres = db.BookReservations.Find(id);
+                db.BookReservations.Remove(bres);
+                db.SaveChanges();
+            }
         }
     }
 }

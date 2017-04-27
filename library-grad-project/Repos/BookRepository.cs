@@ -6,28 +6,47 @@ namespace LibraryGradProject.Repos
 {
     public class BookRepository : IRepository<Book>
     {
-        private List<Book> _bookCollection = new List<Book>();
+        private DbContextFactory _dbContextFactory;
+
+        public BookRepository(DbContextFactory dbContextFactory)
+        {
+            _dbContextFactory = dbContextFactory;
+        }
+
 
         public void Add(Book entity)
         {
-            entity.Id = _bookCollection.Count;
-            _bookCollection.Add(entity);
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                db.Books.Add(entity);
+                db.SaveChanges();
+            }
         }
 
         public IEnumerable<Book> GetAll()
         {
-            return _bookCollection;
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                return db.Books.ToList();
+            }
         }
 
         public Book Get(int id)
         {
-            return _bookCollection.Where(book => book.Id == id).SingleOrDefault();
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                return db.Books.Find(id);
+            }
         }
 
         public void Remove(int id)
         {
-            Book bookToRemove = Get(id);
-            _bookCollection.Remove(bookToRemove);            
+            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            {
+                Book b = db.Books.Find(id);
+                db.Books.Remove(b);
+                db.SaveChanges();
+            }
         }
     }
 }

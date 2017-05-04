@@ -1,6 +1,7 @@
 ﻿using LibraryGradProject.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 
 namespace LibraryGradProject.Repos
 {
@@ -16,7 +17,7 @@ namespace LibraryGradProject.Repos
 
         public void Add(Book entity)
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 db.Books.Add(entity);
                 db.SaveChanges();
@@ -25,7 +26,7 @@ namespace LibraryGradProject.Repos
 
         public IEnumerable<Book> GetAll()
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 return db.Books.ToList();
             }
@@ -33,7 +34,7 @@ namespace LibraryGradProject.Repos
 
         public Book Get(int id)
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 return db.Books.Find(id);
             }
@@ -41,7 +42,7 @@ namespace LibraryGradProject.Repos
 
         public void Remove(int id)
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 Book b = db.Books.Find(id);
                 db.Books.Remove(b);

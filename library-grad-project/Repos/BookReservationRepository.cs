@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Diagnostics;
+using System.Data.Entity;
 
 namespace LibraryGradProject.Repos
 {
@@ -20,27 +22,35 @@ namespace LibraryGradProject.Repos
 
         public void Add(BookReservation entity)
             {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
-                Book _book = db.Books.Find(entity.BookId);
-                ICollection<BookReservation> currentReservations = _book.BookReservations;
-             
-                List<BookReservation> conflictingReservations = currentReservations.Where(bookRes => !((bookRes.EndDate < entity.StartDate) || (bookRes.StartDate > entity.EndDate))).ToList();
-                if (conflictingReservations.Count == 0)
+                Debug.WriteLine("BookReservation started...");
+                try
                 {
-                    if (entity.StartDate <= entity.EndDate)
+                    var currentReservations = db.Books.Where(b => b.Id == entity.BookId).Include("BookReservations").FirstOrDefault().BookReservations;
+                    Debug.WriteLine("Got current reservations");
+                    List<BookReservation> conflictingReservations = currentReservations.Where(bookRes => !((bookRes.EndDate < entity.StartDate) || (bookRes.StartDate > entity.EndDate))).ToList();
+                    Debug.WriteLine(conflictingReservations.ToString());
+                    if (conflictingReservations.Count == 0)
                     {
-                        db.BookReservations.Add(entity);
-                        db.SaveChanges();
+                        if (entity.StartDate <= entity.EndDate)
+                        {
+                            db.BookReservations.Add(entity);
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            throw new Exception("Book reservation End date before Start date");
+                        }
                     }
                     else
                     {
-                        throw new Exception("Book reservation End date before Start date");
+                        throw new Exception("Conflicting Reservation");
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    throw new Exception("Conflicting Reservation");
+                    Debug.WriteLine(e.ToString());
                 }
             }
             
@@ -48,7 +58,7 @@ namespace LibraryGradProject.Repos
 
         public IEnumerable<BookReservation> GetAll()
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 return db.BookReservations.ToList();
             }
@@ -56,7 +66,7 @@ namespace LibraryGradProject.Repos
 
         public BookReservation Get(int id)
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 BookReservation bres = db.BookReservations.Find(id);
                 return bres;
@@ -65,7 +75,7 @@ namespace LibraryGradProject.Repos
 
         public void Remove(int id)
         {
-            using (LibraryDbContext db = _dbContextFactory.GetDbContext())
+            using (ILibraryDbContext db = _dbContextFactory.GetDbContext())
             {
                 BookReservation bres = db.BookReservations.Find(id);
                 db.BookReservations.Remove(bres);
